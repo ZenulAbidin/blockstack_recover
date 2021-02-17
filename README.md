@@ -63,3 +63,5 @@ Address: 1CiuZ4G32KqgiCAePLpMBUPtZ6im8iLVNa
 Priv HEX: e33d56f41cf64bc53cda0c5d963bf673a4bdd7db01c3c6d86937b8c2f99286b201
 WIF Master: L4qSBYSbfeHM1nCL1esc6kANbkmdKhXGdSSLcHev42Kt94GxiBrr
 ```
+
+Your money will be located in the `WIF payment` private key, so import or sweep that into another wallet.
