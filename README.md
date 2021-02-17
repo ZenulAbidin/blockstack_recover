@@ -2,6 +2,7 @@
 
 This is a utility to recover private keys from wallets created by the legacy and now-abandoned blockstack-client Python module. This tool is inspired by the success story of [someone who recovered 1BTC](https://bitcointalk.org/index.php?topic=5306458.0) using a basic version of this tool. I ported it to Python 3 and made it easy to run with minimum dependencies. This utility works on Windows, MacOS and Linux.
 
+Discussion thread on Bitcointalk: https://bitcointalk.org/index.php?topic=5317833.0
 ## Installation
 
 Install using pip:
