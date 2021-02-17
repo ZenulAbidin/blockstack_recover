@@ -19,7 +19,9 @@ python setup.py install
 
 ## Running
 
-Blockstack creates the the wallet.json file inside $HOME/.blockstack for Linux and C:/Users/username/.bitcoin for Windows. It creates the .blockstack folder im your home folder in all cases. Once you locate the file, run:
+Blockstack creates the the wallet.json file inside $HOME/.blockstack for Linux and C:/Users/username/.bitcoin for Windows. It creates the .blockstack folder im your home folder in all cases.
+
+However, that is the encrypted wallet.json, you need the unencrypted one that Blockstack asked you to backup when you created the wallet. Once you locate the file, run:
 
 ```
 blockstack_recover /path/to/wallet.json
