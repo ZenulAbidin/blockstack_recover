@@ -17,6 +17,18 @@ apt-get install build-essential libffi-dev libssl-dev python-dev
 python setup.py install
 ```
 
+If installstion fails because of dependency issues, try creating a virtualenv first and installing blockstack_recover in that:
+
+```
+python -m venv blockstack_env
+# On Unix
+source blockstack_env/bin/activate
+# On Windows
+blockstack_env\Scripts\activate.bat
+# on all platforms
+pip install blockstack_recover
+```
+
 ## Running
 
 Blockstack creates the the wallet.json file inside $HOME/.blockstack for Linux and C:/Users/username/.bitcoin for Windows. It creates the .blockstack folder im your home folder in all cases. Once you locate the file, run:
