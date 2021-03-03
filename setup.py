@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='blockstack_recover',
-    version="1.0.0",
+    version="1.1.0",
     url='https://github.com/ZenulAbidin/blockstack-recover',
     license='GPLv3',
     author='Ali Sherief',

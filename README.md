@@ -18,7 +18,7 @@ apt-get install build-essential libffi-dev libssl-dev python-dev
 python setup.py install
 ```
 
-If installstion fails because of dependency issues, try creating a virtualenv first and installing blockstack_recover in that:
+If installation fails because of dependency issues, try creating a virtualenv first and installing blockstack_recover in that:
 
 ```
 python -m venv blockstack_env
@@ -32,15 +32,31 @@ pip install blockstack_recover
 
 ## Running
 
-Blockstack creates the the wallet.json file inside $HOME/.blockstack for Linux and C:/Users/username/.bitcoin for Windows. It creates the .blockstack folder im your home folder in all cases.
+### Decrypting encrypted wallet.json
 
-However, that is the encrypted wallet.json, you need the unencrypted one that Blockstack asked you to backup when you created the wallet. Once you locate the file, run:
+Blockstack creates the the wallet.json file inside $HOME/.blockstack for Linux and C:/Users/username/.blockstack for Windows. It creates the .blockstack folder in your home folder in all cases.
+
+This file is encrypted and can be decrypted using the `decrypt` subcomand if you know the password.
+
+Example invocation using `blockstack-recover decrypt /home/ubuntu/.blockstack/wallet.json /tmp/decrypted-wallet.json`
 
 ```
-blockstack_recover /path/to/wallet.json
+Blockstack Legacy wallet private key extractor by NotATether
+----
+Opening wallet file /tmp/encwallet.json...
+Enter wallet password:
+Dumping decryted wallet to /tmp/wallet.json
+
+-----
+master_private_key: e33d56f41cf64bc53cda0c5d963bf673a4bdd7db01c3c6d86937b8c2f99286b201
+wallet_password: qwertyuiop
 ```
 
-to dump its wallet information on the terminal. Below is example output printed by this program:
+### Extracting private keys
+
+Once you have the decrypted wallet.json, or perhaps you have the copy that Blockstack asked you to backup when you created the wallet, use the `extract` subcommand to dump its wallet information including private keys to the terminal.
+
+Example incovation using `blockstack_recover extract /tmp/decrypted-wallet.json`:
 
 ```
 Blockstack Legacy wallet private key extractor by NotATether

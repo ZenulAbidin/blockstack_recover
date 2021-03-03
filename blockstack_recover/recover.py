@@ -33,6 +33,7 @@ from Crypto.Cipher import AES
 from bitcoin import compress, encode_privkey, get_privkey_format
 from binascii import hexlify, unhexlify
 from ecdsa.keys import SigningKey, VerifyingKey
+import getpass
 
 from ecdsa.ellipticcurve import INFINITY
 from cachetools.func import lru_cache
@@ -1369,15 +1370,27 @@ BLOCK_SIZE = 32
 # you encrypt must be a multiple of BLOCK_SIZE in length.  This character is
 # used to ensure that your value is always a multiple of BLOCK_SIZE
 PADDING = '{'
-
+DPADDING = b'{'
 # one-liner to sufficiently pad the text to be encrypted
 pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
 
 # one-liners to encrypt/encode and decrypt/decode a string
 # encrypt with AES, encode with base64
 EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
-DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
+DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(DPADDING)
 
+def ensure_length(secret):
+    if len(secret) > 32:
+        secret = secret[:32]
+
+    elif len(secret) < 24:
+        length = 24 - (len(secret) % 24)
+        secret += bytes(chr(length)*length, "utf-8")
+    elif len(secret) > 24 and len(secret) < 32:
+        length = 32 - (len(secret) % 32)
+        secret += bytes(chr(length)*length, "utf-8")
+
+    return hexlify(secret)
 
 def get_new_secret():
     secret = os.urandom(BLOCK_SIZE)
@@ -1385,13 +1398,17 @@ def get_new_secret():
 
 
 def aes_encrypt(payload, secret):
+    secret = ensure_length(secret)
+
     cipher = AES.new(unhexlify(secret))
-    return EncodeAES(cipher, payload)
+    return EncodeAES(cipher, payload).decode("utf-8")
 
 
 def aes_decrypt(payload, secret):
+    secret = ensure_length(secret)
+
     cipher = AES.new(unhexlify(secret))
-    return DecodeAES(cipher, payload)
+    return DecodeAES(cipher, payload).decode("utf-8")
 
 
 def get_addresses_from_privkey(hex_privkey):
@@ -1529,12 +1546,55 @@ def main():
     print("Blockstack Legacy wallet private key extractor by NotATether")
     print("-----")
     print("")
-    if len(sys.argv) != 2:
-        print("Usage:  blockstack-recover /path/to/wallet.json")
+    mode = sys.argv[1]
+    if mode == "extract":
+        if len(sys.argv) != 3:
+            print("Usage: blockstack-recover extract /path/to/wallet.json")
+            sys.exit(1)
+        extract()
+    elif mode == "decrypt":
+        if len(sys.argv) != 4:
+            print("Usage: blockstack-recover decrypt encrypted-wallet.json output-wallet.json")
+            sys.exit(1)
+    else:
+        print("Usage: blockstack-recover [decrypt|extract] ARGS")
         sys.exit(1)
+    decrypt()
 
-    src = sys.argv[1]
-    #dest = sys.argv[2]
+def decrypt():
+    src = sys.argv[2]
+    dest = sys.argv[3]
+    print("Opening wallet file %s..." % src)
+    f_src = open(src)
+    jwallet = json.load(f_src)
+    f_src.close()
+    encrypted_key = jwallet['encrypted_master_private_key']
+    data = {}
+    correct_decryption = False
+    while not correct_decryption:
+        secret = getpass.getpass(prompt="Enter wallet password: ")
+        hex_password = hexlify(bytes(secret, "utf-8"))
+        try:
+            hex_privkey = aes_decrypt(encrypted_key, hex_password)
+            correct_decryption=True
+            break
+        except (ValueError, KeyError) as e:
+            print("Incorrect password")
+    data['master_private_key'] = hex_privkey
+    data['wallet_password'] = secret
+    print("Dumping decryted wallet to %s" % (dest))
+    print("")
+    print("-----")
+    print("master_private_key:", hex_privkey)
+    print("wallet_password:", secret)
+    f_dest = open(dest,'w')
+    f_dest.write(json.dumps(data))
+    f_dest.close() 
+    sys.exit(0)
+
+def extract():
+    src = sys.argv[2]
+    #dest = sys.argv[3]
 
     print("Opening wallet file %s..." % src)
     f_src = open(src)
@@ -1612,6 +1672,7 @@ def main():
     print("Address:", btc)
     print("Priv HEX:", priv_hex)
     print("WIF Master:", priv_wif)
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()
