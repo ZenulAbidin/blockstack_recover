@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 setup(
     name='blockstack_recover',
     version="1.1.0",
-    url='https://github.com/ZenulAbidin/blockstack-recover',
+    url='https://github.com/ZenulAbidin/blockstack_recover',
     license='GPLv3',
     author='Ali Sherief',
     author_email='alihsherief@linuxmail.org',
@@ -17,7 +17,7 @@ setup(
         [console_scripts]
         blockstack-recover=blockstack_recover.recover:main
     ''',
-    download_url='https://github.com/ZenulAbidin/blockstack-recover/archive/master.zip',
+    download_url='https://github.com/ZenulAbidin/blockstack_recover/archive/master.zip',
     zip_safe=False,
     include_package_data=True,
     install_requires=[
